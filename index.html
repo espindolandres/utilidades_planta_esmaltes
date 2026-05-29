@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b5ea8" />
+  <meta name="description" content="Centro de cálculos de planta: silos, colorantes y tanques en una sola app profesional para móvil y tablet." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Planta Suite" />
+  <title>Centro de Cálculos de Planta</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CP</div>
+        <div class="brand-copy">
+          <p class="eyebrow">Suite operativa</p>
+          <h1>Centro de Cálculos de Planta</h1>
+          <p class="topbar-subtitle">Una sola app para silos, colorantes y tanques, optimizada para uso táctil en planta.</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="status-pill" id="networkStatus" aria-live="polite">Sin verificar conexión</div>
+        <label class="switch" for="globalPlantMode">
+          <input id="globalPlantMode" type="checkbox" />
+          <span>Modo planta</span>
+        </label>
+        <button class="btn btn-secondary" id="installBtn" hidden type="button">Instalar app</button>
+      </div>
+    </header>
+
+    <nav class="route-tabs desktop-tabs" aria-label="Secciones principales">
+      <button class="route-btn active" type="button" data-route="inicio">Inicio</button>
+      <button class="route-btn" type="button" data-route="silos">Silos y mezclas</button>
+      <button class="route-btn" type="button" data-route="colorantes">Colorantes</button>
+      <button class="route-btn" type="button" data-route="tanques">Tanques</button>
+    </nav>
+
+    <main class="app-main">
+      <section id="route-inicio" class="route-section">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Acceso rápido</p>
+            <h2>Todo en un solo repositorio</h2>
+            <p class="muted">La app está pensada para GitHub Pages, con navegación simple, módulos claros y diseño consistente para celular y tablet.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" type="button" data-route="silos">Abrir silos</button>
+            <button class="btn btn-secondary" type="button" data-route="colorantes">Abrir colorantes</button>
+            <button class="btn btn-secondary" type="button" data-route="tanques">Abrir tanques</button>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="dashboard-card">
+            <div class="dashboard-badge">01</div>
+            <h3>Silos, traslados y mezclas</h3>
+            <p>Incluye cálculos por ecuación, traslados entre silos, convertidor de mezclas y su histórico.</p>
+            <button class="btn btn-primary" type="button" data-route="silos">Entrar</button>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="dashboard-badge">02</div>
+            <h3>Colorantes para esmalte</h3>
+            <p>Calcula masa de sólidos, porcentajes y cantidades a adicionar, con exportación de reportes.</p>
+            <button class="btn btn-primary" type="button" data-route="colorantes">Entrar</button>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="dashboard-badge">03</div>
+            <h3>Medidas de tanques</h3>
+            <p>Consulta por tabla e interpolación lineal, con vacío, litros, extrapolación controlada e histórico.</p>
+            <button class="btn btn-primary" type="button" data-route="tanques">Entrar</button>
+          </article>
+        </div>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h2>Resumen rápido</h2>
+              <p class="muted">Muestra la última actividad guardada en este dispositivo.</p>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-label">Último registro de silos</div>
+              <div class="summary-value" id="homeSummarySilos">Sin registros</div>
+              <div class="summary-sub" id="homeSummarySilosSub">Todavía no hay cálculos guardados.</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">Último estado de colorantes</div>
+              <div class="summary-value" id="homeSummaryColor">Sin datos</div>
+              <div class="summary-sub" id="homeSummaryColorSub">Completa un cálculo para ver un resumen aquí.</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">Último registro de tanques</div>
+              <div class="summary-value" id="homeSummaryTank">Sin registros</div>
+              <div class="summary-sub" id="homeSummaryTankSub">Todavía no hay cálculos guardados.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h2>Respaldo y datos locales</h2>
+              <p class="muted">Exporta, importa o limpia la información guardada en este dispositivo.</p>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn-secondary" type="button" id="backupExportBtn">Exportar respaldo JSON</button>
+            <label class="btn btn-secondary" for="backupImportInput" style="cursor:pointer">Importar respaldo JSON</label>
+            <input id="backupImportInput" type="file" accept="application/json" hidden />
+            <button class="btn btn-danger" type="button" id="backupWipeBtn">Borrar todos los datos locales</button>
+          </div>
+          <div class="help inline-note" id="backupStatus">Tus datos siguen siendo locales al navegador.</div>
+        </section>
+      </section>
+
+      <section id="route-silos" class="route-section" hidden>
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">Módulo 1</p>
+            <h2>Silos, traslados y mezclas</h2>
+            <p class="muted">Consolida el cálculo de silos, traslados de litros y conversión de mezclas en una sola interfaz.</p>
+          </div>
+        </div>
+
+        <details class="card" id="siloDetailsCalc" open>
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>1) Selección y cálculo</h3>
+                <p class="muted">Elige el silo, el modo y escribe un valor.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+
+          <div class="details-body">
+            <div class="grid">
+              <div class="field col-6">
+                <label for="siloSelect">Silo</label>
+                <select id="siloSelect"></select>
+                <p class="help" id="siloMeta">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="siloMode">Modo de cálculo</label>
+                <select id="siloMode">
+                  <option value="altura">Altura (cm) → Litros</option>
+                  <option value="litros">Litros → Altura (cm)</option>
+                  <option value="vacio">Vacío (cm) → Litros</option>
+                </select>
+                <p class="help" id="siloModeHelp">—</p>
+              </div>
+
+              <div class="field col-12">
+                <label id="siloValueLabel" for="siloValue">Valor</label>
+                <input id="siloValue" type="text" inputmode="decimal" enterkeyhint="done" placeholder="Ej: 50" />
+                <p class="help" id="siloRange">—</p>
+              </div>
+            </div>
+
+            <div class="btns">
+              <button class="btn btn-primary" id="siloSaveBtn" type="button">Guardar</button>
+              <button class="btn btn-secondary" id="siloClearBtn" type="button">Limpiar</button>
+            </div>
+
+            <div class="alert error" id="siloError" hidden></div>
+
+            <div class="result" id="siloResult" aria-live="polite">
+              <div class="alert">
+                <strong id="siloResultTitle">Resultado</strong>
+                <div class="help" id="siloResultSub" style="margin-top:6px;">—</div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Altura (cm)</div>
+                  <div class="v" id="siloOutAltura">—</div>
+                  <div class="sub" id="siloOutAlturaSub">—</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Litros (L)</div>
+                  <div class="v" id="siloOutLitros">—</div>
+                  <div class="sub" id="siloOutLitrosSub">—</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Vacío (cm)</div>
+                  <div class="v" id="siloOutVacio">—</div>
+                  <div class="sub" id="siloOutVacioSub">—</div>
+                </div>
+                <div class="metric">
+                  <div class="k">% de capacidad</div>
+                  <div class="v" id="siloOutPct">—</div>
+                  <div class="sub" id="siloOutPctSub">—</div>
+                </div>
+              </div>
+
+              <div class="help inline-note" id="siloToast"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="card" id="siloDetailsTable">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>2) Tabla / ecuación del silo seleccionado</h3>
+                <p class="muted">Se puede plegar para ahorrar espacio en móvil.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+          <div class="details-body">
+            <div id="siloTableData"></div>
+          </div>
+        </details>
+
+        <details class="card" id="siloDetailsMove">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>3) Cálculo de litros (traslados)</h3>
+                <p class="muted">Convierte medidas a litros y calcula traslado y descarga.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+          <div class="details-body">
+            <div class="alert">
+              <strong>Fórmulas</strong><br />
+              <span class="muted">
+                Trasladado = (Silo secundario final − Silo secundario inicial) + Entregado<br />
+                Descargado = (Primario final + Trasladado) − Primario inicial
+              </span>
+            </div>
+
+            <div class="grid">
+              <div class="field col-6">
+                <label for="movePrimarySilo">Silo primario</label>
+                <select id="movePrimarySilo"></select>
+                <p class="help" id="movePrimaryMeta">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="movePrimaryType">Medida primario</label>
+                <select id="movePrimaryType">
+                  <option value="altura">Altura (cm)</option>
+                  <option value="vacio">Vacío (cm)</option>
+                  <option value="litros">Litros (L)</option>
+                </select>
+                <p class="help" id="movePrimaryHelp">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="movePrimaryInitial">Primario inicial</label>
+                <input id="movePrimaryInitial" type="text" inputmode="decimal" placeholder="Ej: 120" />
+              </div>
+
+              <div class="field col-6">
+                <label for="movePrimaryFinal">Primario final</label>
+                <input id="movePrimaryFinal" type="text" inputmode="decimal" placeholder="Ej: 110" />
+              </div>
+
+              <div class="field col-6">
+                <label for="moveSecondarySilo">Silo secundario</label>
+                <select id="moveSecondarySilo"></select>
+                <p class="help" id="moveSecondaryMeta">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="moveSecondaryType">Medida secundario</label>
+                <select id="moveSecondaryType">
+                  <option value="altura">Altura (cm)</option>
+                  <option value="vacio">Vacío (cm)</option>
+                  <option value="litros">Litros (L)</option>
+                </select>
+                <p class="help" id="moveSecondaryHelp">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="moveSecondaryInitial">Secundario inicial</label>
+                <input id="moveSecondaryInitial" type="text" inputmode="decimal" placeholder="Ej: 90" />
+              </div>
+
+              <div class="field col-6">
+                <label for="moveSecondaryFinal">Secundario final</label>
+                <input id="moveSecondaryFinal" type="text" inputmode="decimal" placeholder="Ej: 100" />
+              </div>
+
+              <div class="field col-12">
+                <label for="moveDelivered">Se entregó (L)</label>
+                <input id="moveDelivered" type="text" inputmode="decimal" placeholder="Ej: 4500" />
+                <p class="help">Si no aplica, déjalo vacío y se toma como 0.</p>
+              </div>
+            </div>
+
+            <div class="btns">
+              <button class="btn btn-primary" id="moveCalcBtn" type="button">Calcular</button>
+              <button class="btn btn-secondary" id="moveClearBtn" type="button">Limpiar</button>
+            </div>
+
+            <div class="alert error" id="moveError" hidden></div>
+
+            <div class="result" id="moveResult" aria-live="polite">
+              <div class="alert ok">
+                <strong>Resultado</strong>
+                <div class="help" id="moveResultSub" style="margin-top:6px;">—</div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Trasladado al secundario</div>
+                  <div class="v" id="moveOutTras">—</div>
+                  <div class="sub">L</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Descargado al primario</div>
+                  <div class="v" id="moveOutDesc">—</div>
+                  <div class="sub">L</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Primario (L inicial → final)</div>
+                  <div class="v" id="moveOutPrimary">—</div>
+                  <div class="sub" id="moveOutPrimarySub">—</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Secundario (L inicial → final)</div>
+                  <div class="v" id="moveOutSecondary">—</div>
+                  <div class="sub" id="moveOutSecondarySub">—</div>
+                </div>
+              </div>
+
+              <div class="help inline-note" id="moveToast"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="card" id="siloDetailsMix">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>4) Convertidor de mezclas (2 y 3 componentes)</h3>
+                <p class="muted">Acepta A/B 60/40 o A/B/C 50/30/20 y calcula cuánto sacar y cuánto adicionar.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+
+          <div class="details-body">
+            <div class="alert">
+              <strong>Ejemplos</strong><br />
+              <span class="muted">
+                2 componentes: <span class="mono">Satinado 507/Satinado 508 60/40</span><br />
+                3 componentes: <span class="mono">ProdA/ProdB/ProdC 60/30/10</span>
+              </span>
+            </div>
+
+            <div class="grid">
+              <div class="field col-12">
+                <label for="mixCurrentName">Mezcla actual (nombre)</label>
+                <input id="mixCurrentName" type="text" placeholder="Ej: Satinado 507/Satinado 508 60/40" />
+                <p class="help" id="mixCurrentHelp">—</p>
+              </div>
+
+              <div class="field col-12">
+                <label for="mixTargetName">Mezcla objetivo (nombre)</label>
+                <input id="mixTargetName" type="text" placeholder="Ej: Satinado 507/Satinado 508 80/20" />
+                <p class="help" id="mixTargetHelp">—</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="mixCurrentLiters">Litros actuales en el silo</label>
+                <input id="mixCurrentLiters" type="text" inputmode="decimal" placeholder="Ej: 800" />
+                <p class="help">Total de litros que ya están mezclados.</p>
+              </div>
+
+              <div class="field col-6">
+                <label for="mixCapacity">Capacidad máxima del silo (opcional)</label>
+                <input id="mixCapacity" type="text" inputmode="decimal" placeholder="Ej: 1800" />
+                <p class="help">Si lo dejas vacío, se asume que puedes agregar lo necesario.</p>
+              </div>
+            </div>
+
+            <div class="btns">
+              <button class="btn btn-primary" id="mixCalcBtn" type="button">Calcular</button>
+              <button class="btn btn-secondary" id="mixClearBtn" type="button">Limpiar</button>
+            </div>
+
+            <div class="alert error" id="mixError" hidden></div>
+
+            <div class="result" id="mixResult" aria-live="polite">
+              <div class="alert ok">
+                <strong id="mixResultTitle">Resultado</strong>
+                <div class="help" id="mixResultSub" style="margin-top:6px;">—</div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Sacar mezcla</div>
+                  <div class="v" id="mixOutRemove">—</div>
+                  <div class="sub">L (mezcla homogénea)</div>
+                </div>
+
+                <div class="metric" id="mixSingleAddMetric" style="display:none">
+                  <div class="k">Agregar (individual)</div>
+                  <div class="v" id="mixOutAdd">—</div>
+                  <div class="sub" id="mixOutAddWho">—</div>
+                </div>
+
+                <div class="metric" id="mixAddAMetric" style="display:none">
+                  <div class="k">Agregar A</div>
+                  <div class="v" id="mixAddA">—</div>
+                  <div class="sub" id="mixAddAName">—</div>
+                </div>
+
+                <div class="metric" id="mixAddBMetric" style="display:none">
+                  <div class="k">Agregar B</div>
+                  <div class="v" id="mixAddB">—</div>
+                  <div class="sub" id="mixAddBName">—</div>
+                </div>
+
+                <div class="metric" id="mixAddCMetric" style="display:none">
+                  <div class="k">Agregar C</div>
+                  <div class="v" id="mixAddC">—</div>
+                  <div class="sub" id="mixAddCName">—</div>
+                </div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Total final</div>
+                  <div class="v" id="mixFinalTotal">—</div>
+                  <div class="sub">L</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Composición final</div>
+                  <div class="v" id="mixFinalComp">—</div>
+                  <div class="sub" id="mixFinalCompSub">—</div>
+                </div>
+                <div class="metric" id="mixFinalAMetric" style="display:none">
+                  <div class="k">Final A (L)</div>
+                  <div class="v" id="mixFinalA">—</div>
+                  <div class="sub">L</div>
+                </div>
+                <div class="metric" id="mixFinalBMetric" style="display:none">
+                  <div class="k">Final B (L)</div>
+                  <div class="v" id="mixFinalB">—</div>
+                  <div class="sub">L</div>
+                </div>
+              </div>
+
+              <div class="alert" id="mixSteps" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="card" id="siloDetailsHistory">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>5) Histórico</h3>
+                <p class="muted">Se guarda localmente en este dispositivo.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+
+          <div class="details-body">
+            <div id="siloHistory"></div>
+            <div class="btns" style="margin-top:12px;">
+              <button class="btn btn-secondary" id="siloHistCopyBtn" type="button">Copiar</button>
+              <button class="btn btn-secondary" id="siloHistCsvBtn" type="button">CSV</button>
+              <button class="btn btn-ghost" id="siloHistClearBtn" type="button">Limpiar</button>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section id="route-colorantes" class="route-section" hidden>
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">Módulo 2</p>
+            <h2>Calculadora de colorantes para esmalte</h2>
+            <p class="muted">Calcula masa de sólidos, porcentajes y cantidades a adicionar con reportes listos para copiar o exportar.</p>
+          </div>
+        </div>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h3>1) Datos del esmalte</h3>
+              <p class="muted">Completa volumen y densidad. La app calcula sólidos automáticamente según el tipo de esmalte.</p>
+            </div>
+          </div>
+
+          <div class="metric metric-key" aria-live="polite" style="margin-bottom:16px;">
+            <div class="k">Masa de sólidos (base para porcentaje)</div>
+            <div class="v" id="colorOutMasaSolidos">—</div>
+            <div class="sub">Masa total × sólidos</div>
+          </div>
+
+          <div class="grid">
+            <div class="field col-4">
+              <label for="colorTipo">Tipo de esmalte</label>
+              <select id="colorTipo">
+                <option value="brillante">Brillante</option>
+                <option value="satinado">Satinado</option>
+                <option value="monocapa">Monocapa</option>
+              </select>
+              <p class="help">Selecciona el tipo de esmalte a preparar.</p>
+            </div>
+
+            <div class="field col-4">
+              <label for="colorVolumen">Volumen a colorear</label>
+              <div class="input-row">
+                <input id="colorVolumen" type="text" inputmode="decimal" placeholder="Ej: 100" />
+                <select id="colorVolumenUnidad" class="input-compact" aria-label="Unidad de volumen">
+                  <option value="litros">L</option>
+                  <option value="mililitros">mL</option>
+                </select>
+              </div>
+              <p class="help">Se normaliza internamente a litros (L).</p>
+            </div>
+
+            <div class="field col-4">
+              <label for="colorDensidad">Densidad</label>
+              <div class="input-row">
+                <input id="colorDensidad" type="text" inputmode="decimal" placeholder="Ej: 1.81" />
+                <select id="colorDensidadUnidad" class="input-compact" aria-label="Unidad de densidad">
+                  <option value="kgL">kg/L (g/mL)</option>
+                  <option value="kgm3">kg/m³</option>
+                </select>
+              </div>
+              <p class="help">Ejemplo: 1.81 kg/L equivale a 1810 kg/m³.</p>
+            </div>
+
+            <div class="field col-12">
+              <details class="mini-details" id="colorDetailsSolidos">
+                <summary>Ver detalle del cálculo</summary>
+                <div class="mini-body">
+                  <div class="mini-metric">
+                    <div class="k">Volumen normalizado</div>
+                    <div class="v" id="colorOutVolumenL">—</div>
+                    <div class="sub" id="colorOutVolumenRaw">—</div>
+                  </div>
+
+                  <div class="mini-metric">
+                    <div class="k">Densidad normalizada</div>
+                    <div class="v" id="colorOutDensidadKgL">—</div>
+                    <div class="sub" id="colorOutDensidadRaw">—</div>
+                  </div>
+
+                  <div class="mini-metric">
+                    <div class="k">Sólidos</div>
+                    <div class="v" id="colorOutSolidosPct">—</div>
+                    <div class="sub" id="colorOutSolidosFrac">—</div>
+                  </div>
+
+                  <div class="mini-metric">
+                    <div class="k">Masa total</div>
+                    <div class="v" id="colorOutMasaTotal">—</div>
+                    <div class="sub">Volumen(L) × Densidad(kg/L)</div>
+                  </div>
+
+                  <div class="mini-metric">
+                    <div class="k">Constantes del tipo</div>
+                    <div class="v" id="colorOutConstantes">—</div>
+                    <div class="sub">S(%) = dens × c1 + c2</div>
+                  </div>
+
+                  <div class="alerts">
+                    <div class="alert error" id="colorError" hidden></div>
+                    <div class="alert warning" id="colorWarning" hidden></div>
+                    <div class="alert info">
+                      <strong>Tip:</strong> El porcentaje de cada colorante se aplica sobre la <strong>masa de sólidos</strong>.
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h3>2) Colorantes</h3>
+              <p class="muted">Agrega hasta 6 colorantes. El sistema calcula automáticamente la cantidad a adicionar.</p>
+            </div>
+            <div class="btns">
+              <button class="btn btn-ghost" id="colorAddBtn" type="button">Añadir</button>
+              <button class="btn btn-secondary" id="colorClearBtn" type="button">Limpiar</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th style="width:70px;">#</th>
+                  <th>Nombre del colorante</th>
+                  <th style="width:200px;">% color</th>
+                  <th style="width:240px;">Cantidad a adicionar</th>
+                  <th style="width:80px; text-align:right;">Quitar</th>
+                </tr>
+              </thead>
+              <tbody id="colorBody"></tbody>
+            </table>
+          </div>
+
+          <div class="totals" aria-live="polite">
+            <div class="total-item">
+              <div class="k">Porcentaje total</div>
+              <div class="v" id="colorPctTotal">—</div>
+            </div>
+            <div class="total-item">
+              <div class="k">Total a adicionar</div>
+              <div class="v" id="colorTotalAdd">—</div>
+            </div>
+            <div class="total-item">
+              <div class="k">Estado</div>
+              <div class="v" id="colorEstado">—</div>
+            </div>
+          </div>
+
+          <div class="btns" style="margin-top:16px;">
+            <button class="btn btn-primary" id="colorCopyBtn" type="button">Copiar reporte</button>
+            <button class="btn btn-secondary" id="colorTxtBtn" type="button">Exportar TXT</button>
+            <button class="btn btn-secondary" id="colorCsvBtn" type="button">Exportar CSV</button>
+            <button class="btn btn-secondary" id="colorPrintBtn" type="button">Imprimir</button>
+          </div>
+
+          <div class="toast" id="colorToast" role="status" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section id="route-tanques" class="route-section" hidden>
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">Módulo 3</p>
+            <h2>Medidas de tanques</h2>
+            <p class="muted">Consulta por tabla o modelo lineal con cálculo automático, extrapolación controlada e histórico.</p>
+          </div>
+        </div>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h3>1) Selección y cálculo</h3>
+              <p class="muted">Elige el tanque o silo, el modo y escribe un valor.</p>
+            </div>
+            <div class="btns" style="margin-top:0;">
+              <button class="btn btn-ghost" id="tankResetStateBtn" type="button">Restablecer</button>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field col-6">
+              <label for="tankSelect">Tanque / silo</label>
+              <select id="tankSelect"></select>
+              <p class="help" id="tankMeta">—</p>
+            </div>
+
+            <div class="field col-6">
+              <label for="tankMode">Modo de cálculo</label>
+              <select id="tankMode">
+                <option value="altura">Altura (cm) → Litros</option>
+                <option value="litros">Litros → Altura (cm)</option>
+                <option value="vacio">Vacío (cm) → Litros</option>
+              </select>
+              <p class="help" id="tankModeHelp">—</p>
+            </div>
+
+            <div class="field col-12">
+              <label id="tankValueLabel" for="tankValue">Valor</label>
+              <input id="tankValue" type="text" inputmode="decimal" enterkeyhint="done" placeholder="Ej: 39" />
+              <p class="help" id="tankRange">—</p>
+
+              <div class="row" style="margin-top:12px;">
+                <label class="toggle" id="tankExtrapToggle">
+                  <input type="checkbox" id="tankAllowExtrap" />
+                  Extrapolación ±2 cm (estimado)
+                </label>
+                <p class="help" id="tankExtrapHelp" style="margin:0;">—</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="btn btn-primary" id="tankSaveBtn" type="button">Guardar en historial</button>
+            <button class="btn btn-secondary" id="tankClearBtn" type="button">Limpiar</button>
+          </div>
+
+          <div class="alert error" id="tankError" hidden></div>
+          <div class="alert" id="tankWarning" hidden></div>
+
+          <div class="result" id="tankResult" aria-live="polite">
+            <div class="alert">
+              <strong id="tankResultTitle">Resultado</strong>
+              <div class="help" id="tankResultSub" style="margin-top:6px;">—</div>
+            </div>
+
+            <div class="metrics">
+              <div class="metric">
+                <div class="k">Altura (cm)</div>
+                <div class="v" id="tankOutAltura">—</div>
+                <div class="sub" id="tankOutAlturaSub">—</div>
+              </div>
+              <div class="metric">
+                <div class="k">Litros (L)</div>
+                <div class="v" id="tankOutLitros">—</div>
+                <div class="sub" id="tankOutLitrosSub">—</div>
+              </div>
+              <div class="metric">
+                <div class="k">Vacío (cm)</div>
+                <div class="v" id="tankOutVacio">—</div>
+                <div class="sub" id="tankOutVacioSub">—</div>
+              </div>
+              <div class="metric">
+                <div class="k">% de capacidad</div>
+                <div class="v" id="tankOutPct">—</div>
+                <div class="sub" id="tankOutPctSub">—</div>
+              </div>
+            </div>
+
+            <div class="help inline-note" id="tankToast"></div>
+          </div>
+        </section>
+
+        <details class="card" id="tankDetailsTable">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>2) Tabla / modelo del seleccionado</h3>
+                <p class="muted">Se puede plegar para ahorrar espacio.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+          <div class="details-body">
+            <div id="tankTableData"></div>
+          </div>
+        </details>
+
+        <details class="card" id="tankDetailsHistory">
+          <summary>
+            <div class="summary-row">
+              <div>
+                <h3>3) Histórico</h3>
+                <p class="muted">Se guarda localmente en este dispositivo.</p>
+              </div>
+              <div class="chev" aria-hidden="true"></div>
+            </div>
+          </summary>
+
+          <div class="details-body">
+            <div id="tankHistory"></div>
+            <div class="btns" style="margin-top:12px;">
+              <button class="btn btn-secondary" id="tankHistCopyBtn" type="button">Copiar</button>
+              <button class="btn btn-secondary" id="tankHistCsvBtn" type="button">CSV</button>
+              <button class="btn btn-ghost" id="tankHistClearBtn" type="button">Limpiar</button>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      © <span id="currentYear"></span> – Desarrollado por <strong>Andres Felipe Gonzalez Espindola</strong>
+    </footer>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <button class="route-btn active" type="button" data-route="inicio">Inicio</button>
+    <button class="route-btn" type="button" data-route="silos">Silos</button>
+    <button class="route-btn" type="button" data-route="colorantes">Color</button>
+    <button class="route-btn" type="button" data-route="tanques">Tanques</button>
+  </nav>
+
+  <script src="./assets/app.js" defer></script>
+</body>
+</html>
